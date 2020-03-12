@@ -1,0 +1,51 @@
+version: "3"
+services:
+
+  roach1:
+    image: cockroachdb/cockroach:v19.2.4
+    ports:
+      # web ui
+      - "127.0.0.1:8080:8080"
+    volumes:
+      - sr1-data:/cockroach/cockroach-data
+    command: start --insecure --join=roach1,roach2,roach3
+    networks:
+      - insect-lab
+
+  roach2:
+    image: cockroachdb/cockroach:v19.2.4
+    volumes:
+      - sr2-data:/cockroach/cockroach-data
+    command: start --insecure --join=roach1,roach2,roach3
+    networks:
+      - insect-lab
+
+  roach3:
+    image: cockroachdb/cockroach:v19.2.4
+    volumes:
+      - sr3-data:/cockroach/cockroach-data
+    command: start --insecure --join=roach1,roach2,roach3
+    networks:
+      - insect-lab
+
+  roach-runner:
+    build:
+      context: ./cockroach
+    restart: on-failure
+    depends_on:
+      - roach1
+      - roach2
+      - roach3
+    volumes:
+      - ./sql:/docker-entrypoint-initdb.d
+    command: roach1:26257
+    networks:
+      - insect-lab
+
+networks:
+  insect-lab:
+
+volumes:
+  sr1-data:
+  sr2-data:
+  sr3-data:
