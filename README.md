@@ -7,8 +7,7 @@
 
 # up and running
 
-* build runner: `docker-compose build`
-* run cluster: `docker-compose up`
+* run: `docker-compose up`
 * stop and wipe all data: `docker-compose down -v`
 
 # license

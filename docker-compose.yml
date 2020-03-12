@@ -29,16 +29,19 @@ services:
       - insect-lab
 
   roach-runner:
-    build:
-      context: ./cockroach
+    image: cockroachdb/cockroach:v19.2.4
     restart: on-failure
     depends_on:
       - roach1
       - roach2
       - roach3
     volumes:
-      - ./sql:/docker-entrypoint-initdb.d
-    command: roach1:26257
+      - ./sql-init.d:/docker-entrypoint-initdb.d
+      - ./init-data.sh:/usr/local/bin/init-data.sh:ro
+    command:
+        - "shell"
+        - "/usr/local/bin/init-data.sh"
+        - "roach1:26257"
     networks:
       - insect-lab
 
